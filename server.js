@@ -275,7 +275,8 @@ app.use(cors({
   credentials: true
 }));
 
-app.options("*", cors()); // 🔥 ESTO ARREGLA EL POST CON IMAGEN
+app.options("/*", cors());
+ // 🔥 ESTO ARREGLA EL POST CON IMAGEN
 
 
 
