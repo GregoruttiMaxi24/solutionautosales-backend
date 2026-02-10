@@ -275,10 +275,23 @@ app.use(cors({
   credentials: true
 }));
 
-app.options("/*", cors());
- // 🔥 ESTO ARREGLA EL POST CON IMAGEN
-
-
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return cors({
+      origin: [
+        "http://localhost:5500",
+        "http://localhost:5173",
+        "https://solutionautosales.netlify.app",
+        "https://solutionautosales.net",
+        "https://solutionautosales.wixsite.com"
+      ],
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true
+    })(req, res, next);
+  }
+  next();
+});
 
 
 // 🏠 Home
