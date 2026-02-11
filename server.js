@@ -40,23 +40,25 @@ const COLORS = {
 const app = express();
 app.use(express.json());
 
-app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
-    return cors({
-      origin: [
-        "http://localhost:5500",
-        "http://localhost:5173",
-        "https://solutionautosales.netlify.app",
-        "https://solutionautosales.net",
-        "https://solutionautosales.wixsite.com"
-      ],
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: true
-    })(req, res, next);
-  }
-  next();
-});
+const allowedOrigins = [
+  "http://localhost:5500",
+  "http://localhost:5173",
+  "https://solutionautosales.netlify.app",
+  "https://solutionautosales.net",
+  "https://solutionautosales.wixsite.com"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // postman / render healthcheck
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error("Not allowed by CORS"));
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
+
 // 📁 Uploads
 const UPLOADS = path.join(__dirname, "uploads");
 if (!fs.existsSync(UPLOADS)) fs.mkdirSync(UPLOADS);
@@ -284,4 +286,5 @@ app.delete("/cars/:id", auth, (req, res) => {
 // 🏠 Home
 app.get("/", (_, res) => res.send("API Solution Auto Sales funcionando 🚗"));
 
-app.listen(3001, () => console.log("API en http://localhost:3001"));
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log("API corriendo en puerto", PORT));
