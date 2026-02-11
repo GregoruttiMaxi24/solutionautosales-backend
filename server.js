@@ -40,7 +40,23 @@ const COLORS = {
 const app = express();
 app.use(express.json());
 
-
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return cors({
+      origin: [
+        "http://localhost:5500",
+        "http://localhost:5173",
+        "https://solutionautosales.netlify.app",
+        "https://solutionautosales.net",
+        "https://solutionautosales.wixsite.com"
+      ],
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true
+    })(req, res, next);
+  }
+  next();
+});
 // 📁 Uploads
 const UPLOADS = path.join(__dirname, "uploads");
 if (!fs.existsSync(UPLOADS)) fs.mkdirSync(UPLOADS);
@@ -262,36 +278,7 @@ app.delete("/cars/:id", auth, (req, res) => {
   });
 });
 
-app.use(cors({
-  origin: [
-    "http://localhost:5500",
-    "http://localhost:5173",
-    "https://solutionautosales.netlify.app",
-    "https://solutionautosales.net",
-    "https://solutionautosales.wixsite.com"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
-}));
 
-app.use((req, res, next) => {
-  if (req.method === "OPTIONS") {
-    return cors({
-      origin: [
-        "http://localhost:5500",
-        "http://localhost:5173",
-        "https://solutionautosales.netlify.app",
-        "https://solutionautosales.net",
-        "https://solutionautosales.wixsite.com"
-      ],
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: true
-    })(req, res, next);
-  }
-  next();
-});
 
 
 // 🏠 Home
